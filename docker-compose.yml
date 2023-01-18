@@ -1,0 +1,29 @@
+version: '3'
+services:
+  nginx:
+    image: nginx:latest
+    volumes:
+      - ./nginx:/etc/nginx/conf.d
+      - ./logs/nginx:/var/log/nginx
+      - ./wordpress:/var/www/html
+    links:
+      - wordpress
+    restart: always
+    labels:
+      - 'traefik.enable=true'
+      - 'traefik.data.frontend.rule=Host:domain.com'
+      - 'traefik.data.port=80'
+  wordpress:
+    image: wordpress:php8.2-fpm
+    environment:
+      WORDPRESS_DB_HOST: ''
+      WORDPRESS_DB_NAME: ''
+      WORDPRESS_DB_USER: ''
+      WORDPRESS_DB_PASSWORD: ''
+    volumes:
+      - ./wordpress:/var/www/html/
+    restart: always
+networks:
+  default:
+    name: traefik
+    external: true
